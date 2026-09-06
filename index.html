@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RISHI</title>
+
+<style>
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#080808;
+color:white;
+padding-bottom:75px;
+}
+
+header{
+height:65px;
+background:#000;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:26px;
+font-weight:bold;
+letter-spacing:3px;
+border-bottom:1px solid #252525;
+}
+
+.page{
+display:none;
+padding:15px;
+max-width:600px;
+margin:auto;
+}
+
+.page.active{
+display:block;
+}
+
+.card{
+background:#151515;
+border:1px solid #2b2b2b;
+border-radius:18px;
+padding:16px;
+margin-bottom:15px;
+}
+
+input,textarea{
+width:100%;
+background:#242424;
+color:white;
+border:1px solid #333;
+border-radius:12px;
+padding:14px;
+margin:8px 0;
+font-size:16px;
+}
+
+textarea{
+min-height:100px;
+resize:none;
+}
+
+button{
+border:none;
+border-radius:12px;
+padding:12px 16px;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.main-btn{
+width:100%;
+background:white;
+color:black;
+margin-top:8px;
+}
+
+.dark-btn{
+background:#292929;
+color:white;
+}
+
+.like-btn{
+background:#202020;
+color:white;
+margin-top:10px;
+border:1px solid #444;
+}
+
+.like-btn.liked{
+background:white;
+color:black;
+}
+
+.bottom{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+height:70px;
+background:#000;
+border-top:1px solid #292929;
+display:flex;
+justify-content:space-around;
+align-items:center;
+}
+
+.nav{
+background:none;
+color:white;
+padding:5px;
+font-size:13px;
+}
+
+.logo{
+width:90px;
+height:90px;
+margin:20px auto 10px;
+border-radius:50%;
+background:#000;
+border:2px solid #555;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:50px;
+font-weight:bold;
+box-shadow:0 0 20px #222;
+}
+
+.center{
+text-align:center;
+}
+
+.hidden{
+display:none;
+}
+
+.profile-photo{
+width:100px;
+height:100px;
+border-radius:50%;
+object-fit:cover;
+border:2px solid #555;
+background:#222;
+display:block;
+margin:10px auto;
+}
+
+.post-user{
+display:flex;
+align-items:center;
+gap:10px;
+font-weight:bold;
+}
+
+.small-photo{
+width:42px;
+height:42px;
+border-radius:50%;
+object-fit:cover;
+background:#333;
+}
+
+.post-media{
+width:100%;
+max-height:450px;
+object-fit:cover;
+border-radius:14px;
+margin-top:10px;
+background:#000;
+}
+
+.file-label{
+display:block;
+background:#292929;
+padding:14px;
+border-radius:12px;
+text-align:center;
+margin:8px 0;
+cursor:pointer;
+}
+
+input[type="file"]{
+display:none;
+}
+
+.preview{
+width:100%;
+max-height:300px;
+object-fit:cover;
+border-radius:14px;
+margin-top:10px;
+display:none;
+background:#000;
+}
+
+#profilePreview{
+width:100px;
+height:100px;
+border-radius:50%;
+object-fit:cover;
+margin:auto;
+display:none;
+}
+
+.post-caption{
+font-size:16px;
+line-height:1.5;
+margin-top:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div id="loginPage" class="page active">
+
+<div class="center">
+<div class="logo">R</div>
+<h1>RISHI</h1>
+<p>Welcome back</p>
+</div>
+
+<div class="card">
+
+<input id="loginUser" placeholder="Username">
+
+<input id="loginPass" type="password" placeholder="Password">
+
+<button class="main-btn" onclick="login()">LOGIN</button>
+
+<button class="dark-btn main-btn" onclick="showSignup()">CREATE ACCOUNT</button>
+
+</div>
+
+</div>
+
+
+<!-- SIGNUP -->
+
+<div id="signupPage" class="page">
+
+<div class="center">
+<div class="logo">R</div>
+<h2>Create your RISHI account</h2>
+</div>
+
+<div class="card">
+
+<input id="signupName" placeholder="Your Name">
+
+<input id="signupUser" placeholder="Username">
+
+<input id="signupPass" type="password" placeholder="Password">
+
+<button class="main-btn" onclick="signup()">CREATE ACCOUNT</button>
+
+<button class="dark-btn main-btn" onclick="showLogin()">BACK TO LOGIN</button>
+
+</div>
+
+</div>
+
+
+<!-- APP -->
+
+<div id="app" class="hidden">
+
+<header>RISHI</header>
+
+
+<!-- HOME -->
+
+<div id="home" class="page active">
+
+<div class="card">
+<h2 id="welcomeText">Welcome 👋</h2>
+<p>Share your photos, videos and thoughts.</p>
+</div>
+
+<div id="posts"></div>
+
+</div>
+
+
+<!-- CREATE POST -->
+
+<div id="post" class="page">
+
+<div class="card">
+
+<h2>➕ Create Post</h2>
+
+<textarea id="postText" placeholder="आप क्या सोच रहे हैं?"></textarea>
+
+<label class="file-label">
+📷 Photo या 🎥 Video चुनें
+<input type="file" id="postFile" accept="image/*,video/*" onchange="previewPostFile()">
+</label>
+
+<img id="mediaPreview" class="preview">
+
+<video id="videoPreview" class="preview" controls></video>
+
+<button class="main-btn" onclick="addPost()">POST</button>
+
+</div>
+
+</div>
+
+
+<!-- SEARCH -->
+
+<div id="search" class="page">
+
+<div class="card">
+
+<h2>🔍 Search</h2>
+
+<input
+id="searchInput"
+placeholder="Search posts..."
+oninput="searchPosts()"
+>
+
+<div id="searchResult"></div>
+
+</div>
+
+</div>
+
+
+<!-- PROFILE -->
+
+<div id="profile" class="page">
+
+<div class="card center">
+
+<img id="profilePhoto" class="profile-photo">
+
+<div id="defaultProfile" class="logo">R</div>
+
+<label class="file-label">
+📷 Change Profile Photo
+<input
+type="file"
+id="profileFile"
+accept="image/*"
+onchange="changeProfilePhoto()"
+>
+</label>
+
+<h2 id="profileName">User</h2>
+
+<p id="profileUsername">@username</p>
+
+<p id="postCount">Posts: 0</p>
+
+<button class="main-btn" onclick="logout()">LOGOUT</button>
+
+</div>
+
+</div>
+
+
+<!-- NAVIGATION -->
+
+<div class="bottom">
+
+<button class="nav" onclick="showPage('home')">
+🏠<br>Home
+</button>
+
+<button class="nav" onclick="showPage('post')">
+➕<br>Post
+</button>
+
+<button class="nav" onclick="showPage('search')">
+🔍<br>Search
+</button>
+
+<button class="nav" onclick="showPage('profile')">
+👤<br>Profile
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+let currentUser=null;
+
+let posts=[];
+
+
+/* LOGIN PAGES */
+
+function showSignup(){
+
+document.getElementById("loginPage").classList.remove("active");
+
+document.getElementById("signupPage").classList.add("active");
+
+}
+
+function showLogin(){
+
+document.getElementById("signupPage").classList.remove("active");
+
+document.getElementById("loginPage").classList.add("active");
+
+}
+
+
+/* SIGNUP */
+
+function signup(){
+
+let name=document.getElementById("signupName").value.trim();
+
+let username=document.getElementById("signupUser").value.trim();
+
+let password=document.getElementById("signupPass").value;
+
+if(!name || !username || !password){
+
+alert("सारी जानकारी भरो!");
+
+return;
+
+}
+
+let user={
+
+name:name,
+
+username:username,
+
+password:password,
+
+profilePhoto:""
+
+};
+
+localStorage.setItem("rishiUser",JSON.stringify(user));
+
+alert("Account बन गया! अब Login करो.");
+
+showLogin();
+
+}
+
+
+/* LOGIN */
+
+function login(){
+
+let username=document.getElementById("loginUser").value.trim();
+
+let password=document.getElementById("loginPass").value;
+
+let saved=localStorage.getItem("rishiUser");
+
+if(!saved){
+
+alert("पहले Account बनाओ!");
+
+return;
+
+}
+
+let user=JSON.parse(saved);
+
+if(username===user.username && password===user.password){
+
+currentUser=user;
+
+startApp();
+
+}else{
+
+alert("Username या Password गलत है!");
+
+}
+
+}
+
+
+/* START APP */
+
+function startApp(){
+
+document.getElementById("loginPage").classList.remove("active");
+
+document.getElementById("signupPage").classList.remove("active");
+
+document.getElementById("app").classList.remove("hidden");
+
+document.getElementById("welcomeText").innerText=
+"Welcome, "+currentUser.name+" 👋";
+
+document.getElementById("profileName").innerText=currentUser.name;
+
+document.getElementById("profileUsername").innerText=
+"@"+currentUser.username;
+
+updateProfilePhoto();
+
+showPage("home");
+
+}
+
+
+/* NAVIGATION */
+
+function showPage(pageName){
+
+let pages=document.querySelectorAll("#app .page");
+
+pages.forEach(function(page){
+
+page.classList.remove("active");
+
+});
+
+document.getElementById(pageName).classList.add("active");
+
+}
+
+
+/* PROFILE PHOTO */
+
+function changeProfilePhoto(){
+
+let file=document.getElementById("profileFile").files[0];
+
+if(!file) return;
+
+let reader=new FileReader();
+
+reader.onload=function(e){
+
+currentUser.profilePhoto=e.target.result;
+
+localStorage.setItem(
+"rishiUser",
+JSON.stringify(currentUser)
+);
+
+updateProfilePhoto();
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+
+function updateProfilePhoto(){
+
+let photo=document.getElementById("profilePhoto");
+
+let defaultLogo=document.getElementById("defaultProfile");
+
+if(currentUser.profilePhoto){
+
+photo.src=currentUser.profilePhoto;
+
+photo.style.display="block";
+
+defaultLogo.style.display="none";
+
+}else{
+
+photo.style.display="none";
+
+defaultLogo.style.display="flex";
+
+}
+
+}
+
+
+/* POST FILE PREVIEW */
+
+function previewPostFile(){
+
+let file=document.getElementById("postFile").files[0];
+
+if(!file) return;
+
+let imagePreview=document.getElementById("mediaPreview");
+
+let videoPreview=document.getElementById("videoPreview");
+
+imagePreview.style.display="none";
+
+videoPreview.style.display="none";
+
+let url=URL.createObjectURL(file);
+
+if(file.type.startsWith("image")){
+
+imagePreview.src=url;
+
+imagePreview.style.display="block";
+
+}
+
+else if(file.type.startsWith("video")){
+
+videoPreview.src=url;
+
+videoPreview.style.display="block";
+
+}
+
+}
+
+
+/* ADD POST */
+
+function addPost(){
+
+let text=document.getElementById("postText").value.trim();
+
+let file=document.getElementById("postFile").files[0];
+
+if(!text && !file){
+
+alert("कुछ लिखो या Photo/Video चुनो!");
+
+return;
+
+}
+
+let post={
+
+username:currentUser.username,
+
+name:currentUser.name,
+
+profilePhoto:currentUser.profilePhoto,
+
+text:text,
+
+media:"",
+
+mediaType:"",
+
+liked:false
+
+};
+
+
+if(file){
+
+let reader=new FileReader();
+
+reader.onload=function(e){
+
+post.media=e.target.result;
+
+post.mediaType=file.type;
+
+posts.unshift(post);
+
+finishPost();
+
+};
+
+reader.readAsDataURL(file);
+
+}else{
+
+posts.unshift(post);
+
+finishPost();
+
+}
+
+}
+
+
+function finishPost(){
+
+document.getElementById("postText").value="";
+
+document.getElementById("postFile").value="";
+
+document.getElementById("mediaPreview").style.display="none";
+
+document.getElementById("videoPreview").style.display="none";
+
+renderPosts();
+
+document.getElementById("postCount").innerText=
+"Posts: "+posts.length;
+
+showPage("home");
+
+}
+
+
+/* RENDER POSTS */
+
+function renderPosts(){
+
+let box=document.getElementById("posts");
+
+box.innerHTML="";
+
+posts.forEach(function(post,index){
+
+let photoHTML;
+
+if(post.profilePhoto){
+
+photoHTML=
+'<img class="small-photo" src="'+post.profilePhoto+'">';
+
+}else{
+
+photoHTML=
+'<div class="small-photo" style="display:flex;align-items:center;justify-content:center;">R</div>';
+
+}
+
+
+let mediaHTML="";
+
+if(post.media){
+
+if(post.mediaType.startsWith("image")){
+
+mediaHTML=
+'<img class="post-media" src="'+post.media+'">';
+
+}
+
+else if(post.mediaType.startsWith("video")){
+
+mediaHTML=
+'<video class="post-media" controls src="'+post.media+'"></video>';
+
+}
+
+}
+
+
+let likeText=post.liked ? "👍 Liked" : "👍 Like";
+
+let likeClass=post.liked ? "like-btn liked" : "like-btn";
+
+
+box.innerHTML+=
+
+'<div class="card">'+
+
+'<div class="post-user">'+
+
+photoHTML+
+
+'<span>'+post.name+'<br><small>@'+post.username+'</small></span>'+
+
+'</div>'+
+
+'<div class="post-caption">'+post.text+'</div>'+
+
+mediaHTML+
+
+'<button class="'+likeClass+'" onclick="toggleLike('+index+')">'+
+
+likeText+
+
+'</button>'+
+
+'</div>';
+
+});
+
+}
+
+
+/* ONE LIKE / UNLIKE */
+
+function toggleLike(index){
+
+posts[index].liked=!posts[index].liked;
+
+renderPosts();
+
+}
+
+
+/* SEARCH */
+
+function searchPosts(){
+
+let value=document.getElementById("searchInput").value.toLowerCase();
+
+let result=document.getElementById("searchResult");
+
+result.innerHTML="";
+
+posts.forEach(function(post){
+
+let text=(post.text+" "+post.name+" "+post.username).toLowerCase();
+
+if(text.includes(value)){
+
+result.innerHTML+=
+
+'<div class="card">'+
+
+'<b>'+post.name+'</b><br>'+
+
+post.text+
+
+'</div>';
+
+}
+
+});
+
+}
+
+
+/* LOGOUT */
+
+function logout(){
+
+currentUser=null;
+
+document.getElementById("app").classList.add("hidden");
+
+document.getElementById("loginPage").classList.add("active");
+
+document.getElementById("loginUser").value="";
+
+document.getElementById("loginPass").value="";
+
+}
+
+</script>
+
+</body>
+</html>
